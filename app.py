@@ -65,6 +65,8 @@ elif option == "Take a Picture":
     image_cleaned = cv2.inpaint(image_rgb, mask, inpaintRadius=3, flags=cv2.INPAINT_TELEA)
     st.image(image_cleaned, caption="Furniture Removed", use_column_width=True)
 
+    """
+
     # **Step 6: Style Transfer**
     st.write("🎨 Applying your selected style...")
     content_image = PILImage.create(image_cleaned)
@@ -90,6 +92,8 @@ elif option == "Take a Picture":
     st.write("✅ Your design process is complete! You can now explore furniture suggestions and implement the AI-based changes.")
 
 # **Final Step: Download Design Report**
+
+ """
 if st.button("📄 Generate Design Report"):
     st.write("🔽 Your customized interior design recommendations will be generated soon!")
 
