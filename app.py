@@ -4,7 +4,6 @@ import numpy as np
 import torch
 from ultralytics import YOLO
 from transformers import DPTFeatureExtractor, DPTForDepthEstimation
-from fastai.learner import load_learner
 from fastai.vision.core import PILImage
 
 # Load AI Models
@@ -38,23 +37,12 @@ image_paths = {
 }
 
 col1, col2, col3 = st.columns(3)
-with col1:
-    st.image(image_paths["Empty Space"], use_column_width=True)
-    if st.button("Empty Space"):
-        space_stage = "Empty Space"
-        st.write("You want to design everything from scratch with professional help.")
-
-with col2:
-    st.image(image_paths["Intermediate"], use_column_width=True)
-    if st.button("Intermediate"):
-        space_stage = "Intermediate"
-        st.write("You want to redesign while keeping some existing pieces.")
-
-with col3:
-    st.image(image_paths["Furnished"], use_column_width=True)
-    if st.button("Furnished"):
-        space_stage = "Furnished"
-        st.write("You just need a designer to add the finishing touch.")
+for idx, (label, img_url) in enumerate(image_paths.items()):
+    with [col1, col2, col3][idx]:
+        st.image(img_url, use_container_width=True)  # Fix deprecated parameter
+        if st.button(label, key=f"stage_{idx}"):  # Fix duplicate button issue
+            space_stage = label
+            st.write(f"You selected: **{label}**")
 
 # **Step 2: Collect User Preferences (Compact Layout)**
 st.subheader("📋 Tell us about your preferences")
@@ -90,8 +78,8 @@ cols = st.columns(4)
 for idx, (style, images) in enumerate(style_images.items()):
     with cols[idx % 4]:  # Arrange in 4 columns
         for img in images:
-            st.image(img, caption=style, use_column_width=True)
-            if st.button(f"Select {style} - {idx}"):
+            st.image(img, caption=style, use_container_width=True)  # Fix deprecated parameter
+            if st.button(f"Select {style}", key=f"style_{style}_{img}"):  # Fix duplicate button issue
                 selected_styles.append(style)
 
 # Determine the most selected style
@@ -111,7 +99,7 @@ if option == "Upload a Photo":
         file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
         image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
         image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        st.image(image_rgb, caption="Uploaded Room Image", use_column_width=True)
+        st.image(image_rgb, caption="Uploaded Room Image", use_container_width=True)
 
 elif option == "Take a Picture":
     picture = st.camera_input("📸 Capture a photo using your webcam")
@@ -119,7 +107,7 @@ elif option == "Take a Picture":
         file_bytes = np.asarray(bytearray(picture.read()), dtype=np.uint8)
         image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
         image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        st.image(image_rgb, caption="Captured Room Image", use_column_width=True)
+        st.image(image_rgb, caption="Captured Room Image", use_container_width=True)
 
 # **Generate the Dream Space**
 if st.button("✨ Generate Your Dream Space"):
@@ -127,7 +115,7 @@ if st.button("✨ Generate Your Dream Space"):
     
     # Display output image from GitHub
     output_image_url = f"{GITHUB_REPO_URL}output.png"
-    st.image(output_image_url, caption="Your AI-Generated Design", use_column_width=True)
+    st.image(output_image_url, caption="Your AI-Generated Design", use_container_width=True)
 
     # Display 3 options in columns
     col1, col2, col3 = st.columns(3)
@@ -135,14 +123,14 @@ if st.button("✨ Generate Your Dream Space"):
     with col1:
         st.subheader("🛍️ Shop it Directly")
         st.write("Find and purchase the exact items in one click.")
-        st.button("🛒 Shop Now")
+        st.button("🛒 Shop Now", key="shop_now")
     
     with col2:
         st.subheader("🏬 Buy from Retailer")
         st.write("Browse similar items from recommended retailers.")
-        st.button("🛍️ Browse Retailers")
+        st.button("🛍️ Browse Retailers", key="browse_retailers")
     
     with col3:
         st.subheader("📞 Contact a Designer")
         st.write("Need help bringing this vision to life? Contact a professional designer.")
-        st.button("📩 Get in Touch")
+        st.button("📩 Get in Touch", key="contact_designer")
