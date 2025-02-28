@@ -7,34 +7,106 @@ from transformers import DPTFeatureExtractor, DPTForDepthEstimation
 from fastai.learner import load_learner
 from fastai.vision.core import PILImage
 
-
 # Load AI Models
 yolo_model = YOLO("yolov8n.pt")  # Object Detection
 depth_model = DPTForDepthEstimation.from_pretrained("Intel/dpt-large")  # Depth Estimation
-# style_model = load_learner("fastai_style_transfer.pkl")  # Style Transfer Model
 
+# GitHub repository URL for images
+GITHUB_REPO_URL = "https://raw.githubusercontent.com/slunara/InteriorDesignAI/main/images/"
+
+# Define the logo image URL
+logo_url = f"{GITHUB_REPO_URL}logo.jpeg"  # Ensure filename matches the GitHub file
+
+# Display the logo in the top right corner
+col1, col2 = st.columns([3, 1])  # Create two columns (logo on the right)
+with col2:
+    st.image(logo_url, width=150)  # Adjust width as needed
+
+# App Title
 st.title("🏠 AI Interior Design Assistant")
-st.write("Answer some questions and receive your personalized design!")
+st.write("Answer a few questions to receive a personalized interior design render!")
 
-# **Step 1: Collect User Information**
-age = st.slider("📅 What's your age?", 18, 80, 30)
-gender = st.selectbox("👤 What's your gender?", ["Male", "Female", "Other"])
-space_type = st.selectbox("🏡 What space do you want to design?", ["Living Room", "Bedroom", "Kitchen", "Office"])
+# **Step 1: Define the Current Stage of Your Space**
+st.subheader("🔎 What is the current state of your space?")
+st.write("We need to know the condition of your space to tailor your design experience.")
 
-st.write("🎨 Choose your favorite styles:")
-styles = ["Modern", "Minimalist", "Classic", "Industrial", "Bohemian", "Scandinavian"]
-selected_styles = st.multiselect("✨ Select styles", styles)
+# Image Paths (Stored in GitHub)
+image_paths = {
+    "Empty Space": f"{GITHUB_REPO_URL}empty.png",
+    "Intermediate": f"{GITHUB_REPO_URL}intermediate.png",
+    "Furnished": f"{GITHUB_REPO_URL}furnished.png",
+}
 
-special_request = st.text_area("✍️ Any special requests for your space?")
+col1, col2, col3 = st.columns(3)
+with col1:
+    st.image(image_paths["Empty Space"], use_column_width=True)
+    if st.button("Empty Space"):
+        space_stage = "Empty Space"
+        st.write("You want to design everything from scratch with professional help.")
 
-# **Step 2: Choose Image Upload or Take a Picture**
-st.write("📸 Upload a photo OR take one now")
+with col2:
+    st.image(image_paths["Intermediate"], use_column_width=True)
+    if st.button("Intermediate"):
+        space_stage = "Intermediate"
+        st.write("You want to redesign while keeping some existing pieces.")
 
-option = st.radio("How do you want to provide the image?", ["Upload a Photo", "Take a Picture"])
+with col3:
+    st.image(image_paths["Furnished"], use_column_width=True)
+    if st.button("Furnished"):
+        space_stage = "Furnished"
+        st.write("You just need a designer to add the finishing touch.")
+
+# **Step 2: Collect User Preferences (Compact Layout)**
+st.subheader("📋 Tell us about your preferences")
+
+col1, col2 = st.columns(2)
+with col1:
+    age = st.slider("📅 Your Age", 18, 80, 30)
+    gender = st.selectbox("👤 Your Gender", ["Male", "Female", "Other"])
+    
+with col2:
+    space_type = st.selectbox("🏡 What space do you want to design?", ["Living Room", "Bedroom"])
+    special_request = st.text_area("✍️ Any special requests?")
+
+# **Step 3: Determine Your Style Based on Images**
+st.subheader("🎨 Which styles do you like?")
+st.write("Select the images that best match your design taste.")
+
+# Style image links stored in GitHub (Ensure correct `.jpeg` filenames)
+style_images = {
+    "Modern": [f"{GITHUB_REPO_URL}image1.jpeg", f"{GITHUB_REPO_URL}image2.jpeg"],
+    "Minimalist": [f"{GITHUB_REPO_URL}image3.jpeg", f"{GITHUB_REPO_URL}image4.jpeg"],
+    "Classic": [f"{GITHUB_REPO_URL}image5.jpeg", f"{GITHUB_REPO_URL}image6.jpeg"],
+    "Industrial": [f"{GITHUB_REPO_URL}image7.jpeg", f"{GITHUB_REPO_URL}image8.jpeg"],
+    "Bohemian": [f"{GITHUB_REPO_URL}image9.jpeg", f"{GITHUB_REPO_URL}image10.jpeg"],
+    "Scandinavian": [f"{GITHUB_REPO_URL}image11.jpeg", f"{GITHUB_REPO_URL}image12.jpeg"],
+}
+
+# Display style images for selection
+st.subheader("🎨 Select the styles you like most")
+selected_styles = []
+cols = st.columns(4)
+
+for idx, (style, images) in enumerate(style_images.items()):
+    with cols[idx % 4]:  # Arrange in 4 columns
+        for img in images:
+            st.image(img, caption=style, use_column_width=True)
+            if st.button(f"Select {style} - {idx}"):
+                selected_styles.append(style)
+
+# Determine the most selected style
+if selected_styles:
+    most_preferred_style = max(set(selected_styles), key=selected_styles.count)
+    st.write(f"🎨 Based on your selections, your preferred style is: **{most_preferred_style}**")
+
+# **Step 4: Upload or Capture a Room Image**
+st.subheader("📸 Upload or Take a Picture of Your Space")
+
+option = st.radio("How would you like to provide the image?", ["Upload a Photo", "Take a Picture"])
+image_rgb = None
 
 if option == "Upload a Photo":
     uploaded_file = st.file_uploader("📤 Upload a well-lit photo of your space", type=["jpg", "png", "jpeg"])
-
     if uploaded_file:
         file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
         image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
@@ -43,57 +115,34 @@ if option == "Upload a Photo":
 
 elif option == "Take a Picture":
     picture = st.camera_input("📸 Capture a photo using your webcam")
-
     if picture:
         file_bytes = np.asarray(bytearray(picture.read()), dtype=np.uint8)
         image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
         image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         st.image(image_rgb, caption="Captured Room Image", use_column_width=True)
 
-    # **Step 3: AI Object Detection**
-    st.write("🔍 Detecting existing furniture...")
-    results = yolo_model(image_rgb)
+# **Generate the Dream Space**
+if st.button("✨ Generate Your Dream Space"):
+    st.subheader("🏡 Your Dream Space Design")
+    
+    # Display output image from GitHub
+    output_image_url = f"{GITHUB_REPO_URL}output.png"
+    st.image(output_image_url, caption="Your AI-Generated Design", use_column_width=True)
 
-    mask = np.zeros(image_rgb.shape[:2], dtype=np.uint8)
-    for result in results:
-        for box in result.boxes:
-            x1, y1, x2, y2 = map(int, box.xyxy[0])
-            mask[y1:y2, x1:x2] = 255  # Mask furniture
-
-    # **Step 4: AI-Based Furniture Removal**
-    st.write("🛠️ Removing existing furniture...")
-    image_cleaned = cv2.inpaint(image_rgb, mask, inpaintRadius=3, flags=cv2.INPAINT_TELEA)
-    st.image(image_cleaned, caption="Furniture Removed", use_column_width=True)
-
-    """
-
-    # **Step 6: Style Transfer**
-    st.write("🎨 Applying your selected style...")
-    content_image = PILImage.create(image_cleaned)
-    style_image = PILImage.create(f"{selected_styles[0].lower()}_style.jpg") if selected_styles else None
-    if style_image:
-        styled_image = style_model.predict(content_image, style_image)
-        st.image(styled_image, caption="Styled Room", use_column_width=True)
-
-    # **Step 7: Generate Furniture Recommendations**
-    st.write("🛋️ Generating furniture recommendations...")
-    furniture_links = {
-        "Modern": "https://www.ikea.com/us/en/cat/living-room-furniture-rooms/",
-        "Minimalist": "https://www.muji.com/",
-        "Classic": "https://www.wayfair.com/furniture/cat/classic-style",
-        "Industrial": "https://www.homedepot.com/c/industrial_style_furniture",
-        "Bohemian": "https://www.worldmarket.com/category/furniture/living-room.do",
-        "Scandinavian": "https://www.nordicnest.com/furniture/"
-    }
-
-    for style in selected_styles:
-        st.markdown(f"[🛒 Explore {style} furniture]({furniture_links[style]})")
-
-    st.write("✅ Your design process is complete! You can now explore furniture suggestions and implement the AI-based changes.")
-
-# **Final Step: Download Design Report**
-
- """
-if st.button("📄 Generate Design Report"):
-    st.write("🔽 Your customized interior design recommendations will be generated soon!")
-
+    # Display 3 options in columns
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.subheader("🛍️ Shop it Directly")
+        st.write("Find and purchase the exact items in one click.")
+        st.button("🛒 Shop Now")
+    
+    with col2:
+        st.subheader("🏬 Buy from Retailer")
+        st.write("Browse similar items from recommended retailers.")
+        st.button("🛍️ Browse Retailers")
+    
+    with col3:
+        st.subheader("📞 Contact a Designer")
+        st.write("Need help bringing this vision to life? Contact a professional designer.")
+        st.button("📩 Get in Touch")
