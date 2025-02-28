@@ -22,7 +22,8 @@ with col2:
     st.image(logo_url, width=350)  # Adjust width as needed
 
 # App Title
-st.title(" AI Interior Design Assistant")
+st.title("DecorAIte - Your AI Interior Design Assistant")
+
 st.write("Answer a few questions to receive a personalized interior design render!")
 
 st.markdown("<hr style='border: 2px solid #bbb;'>", unsafe_allow_html=True)
@@ -45,6 +46,7 @@ for idx, (label, img_url) in enumerate(image_paths.items()):
         if st.button(label, key=f"stage_{idx}"):  # Fix duplicate button issue
             space_stage = label
             st.write(f"You selected: **{label}**")
+            
 st.markdown("<hr style='border: 2px solid #bbb;'>", unsafe_allow_html=True)
 
 # **Step 2: Collect User Preferences (Compact Layout)**
@@ -77,8 +79,6 @@ style_images = {
     "Scandinavian": [f"{GITHUB_REPO_URL}image11.jpeg", f"{GITHUB_REPO_URL}image12.jpeg"],
 }
 
-# Display style images for selection (Fixed Layout)
-st.subheader("🎨 Select the styles you like most")
 
 selected_styles = []
 cols = st.columns(3)  # Create 3 evenly spaced columns
@@ -113,7 +113,7 @@ st.session_state["selected_styles"] = selected_styles
 if selected_styles:
     st.write(f"🎨 Your selected styles: {', '.join(selected_styles)}")
 
-
+st.markdown("<hr style='border: 2px solid #bbb;'>", unsafe_allow_html=True)
 
 # **Step 4: Upload or Capture a Room Image**
 st.subheader("📸 Upload or Take a Picture of Your Space")
