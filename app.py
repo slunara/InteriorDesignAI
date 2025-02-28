@@ -22,8 +22,10 @@ with col2:
     st.image(logo_url, width=350)  # Adjust width as needed
 
 # App Title
-st.title("🏠 AI Interior Design Assistant")
+st.title(" AI Interior Design Assistant")
 st.write("Answer a few questions to receive a personalized interior design render!")
+
+st.markdown("<hr style='border: 2px solid #bbb;'>", unsafe_allow_html=True)
 
 # **Step 1: Define the Current Stage of Your Space**
 st.subheader("🔎 What is the current state of your space?")
@@ -43,6 +45,7 @@ for idx, (label, img_url) in enumerate(image_paths.items()):
         if st.button(label, key=f"stage_{idx}"):  # Fix duplicate button issue
             space_stage = label
             st.write(f"You selected: **{label}**")
+st.markdown("<hr style='border: 2px solid #bbb;'>", unsafe_allow_html=True)
 
 # **Step 2: Collect User Preferences (Compact Layout)**
 st.subheader("📋 Tell us about your preferences")
@@ -60,7 +63,8 @@ with col3:
 special_request = st.text_area("✍️ Any special requests?")
 
 # **Step 3: Determine Your Style Based on Images**
-st.subheader("🎨 Which styles do you like?")
+st.markdown("<hr style='border: 2px solid #bbb;'>", unsafe_allow_html=True)
+
 st.write("Select the images that best match your design taste.")
 
 # Style image links stored in GitHub (Ensure correct `.jpeg` filenames)
@@ -73,16 +77,17 @@ style_images = {
     "Scandinavian": [f"{GITHUB_REPO_URL}image11.jpeg", f"{GITHUB_REPO_URL}image12.jpeg"],
 }
 
-# Display style images for selection
+# Display style images for selection (Fixed Layout)
 st.subheader("🎨 Select the styles you like most")
+
 selected_styles = []
-cols = st.columns(4)
+cols = st.columns(3)  # Create 3 evenly spaced columns
 
 for idx, (style, images) in enumerate(style_images.items()):
-    with cols[idx % 4]:  # Arrange in 4 columns
+    with cols[idx % 3]:  # Arrange images into 3 equal columns
         for img in images:
-            st.image(img, caption=style, use_container_width=True)  # Fix deprecated parameter
-            if st.button(f"Select {style}", key=f"style_{style}_{img}"):  # Fix duplicate button issue
+            st.image(img, caption=style, use_container_width=True)
+            if st.button(f"Select {style}", key=f"style_{style}_{idx}"):  # Unique button ID
                 selected_styles.append(style)
 
 # Determine the most selected style
@@ -111,6 +116,7 @@ elif option == "Take a Picture":
         image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
         image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         st.image(image_rgb, caption="Captured Room Image", use_container_width=True)
+st.markdown("<hr style='border: 2px solid #bbb;'>", unsafe_allow_html=True)
 
 # **Generate the Dream Space**
 if st.button("✨ Generate Your Dream Space"):
