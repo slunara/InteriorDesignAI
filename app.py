@@ -4,7 +4,9 @@ import numpy as np
 import torch
 from ultralytics import YOLO
 from transformers import DPTFeatureExtractor, DPTForDepthEstimation
-from fastai.vision.all import load_learner, PILImage
+from fastai.learner import load_learner
+from fastai.vision.core import PILImage
+
 
 # Load AI Models
 yolo_model = YOLO("yolov8n.pt")  # Object Detection
