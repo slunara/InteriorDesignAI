@@ -11,7 +11,7 @@ from fastai.vision.core import PILImage
 # Load AI Models
 yolo_model = YOLO("yolov8n.pt")  # Object Detection
 depth_model = DPTForDepthEstimation.from_pretrained("Intel/dpt-large")  # Depth Estimation
-style_model = load_learner("fastai_style_transfer.pkl")  # Style Transfer Model
+# style_model = load_learner("fastai_style_transfer.pkl")  # Style Transfer Model
 
 st.title("🏠 AI Interior Design Assistant")
 st.write("Answer some questions and receive your personalized design!")
