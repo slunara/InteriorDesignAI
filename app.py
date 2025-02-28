@@ -64,22 +64,6 @@ elif option == "Take a Picture":
     image_cleaned = cv2.inpaint(image_rgb, mask, inpaintRadius=3, flags=cv2.INPAINT_TELEA)
     st.image(image_cleaned, caption="Furniture Removed", use_column_width=True)
 
-    # **Step 5: Depth Estimation & 3D Modeling**
-    st.write("📏 Estimating depth and reconstructing the room in 3D...")
-    inputs = DPTFeatureExtractor(images=image_cleaned, return_tensors="pt")
-    with torch.no_grad():
-        depth_output = depth_model(**inputs).predicted_depth
-
-    depth = depth_output.squeeze().numpy()
-    depth = (depth - depth.min()) / (depth.max() - depth.min())
-
-    st.image(depth, caption="Depth Map", use_column_width=True, clamp=True)
-
-    depth_o3d = o3d.geometry.Image((depth * 255).astype(np.uint8))
-    room_3d = o3d.geometry.PointCloud.create_from_depth_image(depth_o3d, o3d.camera.PinholeCameraIntrinsic())
-
-    o3d.visualization.draw_geometries([room_3d])
-
     # **Step 6: Style Transfer**
     st.write("🎨 Applying your selected style...")
     content_image = PILImage.create(image_cleaned)
