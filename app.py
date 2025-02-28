@@ -87,13 +87,15 @@ for idx, (style, images) in enumerate(style_images.items()):
     with cols[idx % 3]:  # Arrange images into 3 equal columns
         for img in images:
             st.image(img, caption=style, use_container_width=True)
-            if st.button(f"Select {style}", key=f"style_{style}_{idx}"):  # Unique button ID
+            # Ensure the button key is **unique** by including the image filename
+            if st.button(f"Select {style}", key=f"style_{style}_{img.split('/')[-1]}"):  
                 selected_styles.append(style)
 
 # Determine the most selected style
 if selected_styles:
     most_preferred_style = max(set(selected_styles), key=selected_styles.count)
     st.write(f"🎨 Based on your selections, your preferred style is: **{most_preferred_style}**")
+
 
 # **Step 4: Upload or Capture a Room Image**
 st.subheader("📸 Upload or Take a Picture of Your Space")
