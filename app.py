@@ -83,18 +83,36 @@ st.subheader("🎨 Select the styles you like most")
 selected_styles = []
 cols = st.columns(3)  # Create 3 evenly spaced columns
 
+# Display style images for selection (Fixed Layout)
+st.subheader("🎨 Select the styles you like most")
+
+selected_styles = st.session_state.get("selected_styles", set())  # Store selections across reruns
+
+cols = st.columns(3)  # Create 3 evenly spaced columns
+
 for idx, (style, images) in enumerate(style_images.items()):
     with cols[idx % 3]:  # Arrange images into 3 equal columns
         for img in images:
-            st.image(img, caption=style, use_container_width=True)
-            # Ensure the button key is **unique** by including the image filename
-            if st.button(f"Select {style}", key=f"style_{style}_{img.split('/')[-1]}"):  
-                selected_styles.append(style)
+            # Display image
+            st.image(img, use_container_width=True)
 
-# Determine the most selected style
+            # Unique key based on image filename
+            btn_key = f"style_{img.split('/')[-1]}"
+
+            # Use a toggle button effect
+            if st.button("✓", key=btn_key):
+                if style in selected_styles:
+                    selected_styles.remove(style)  # Unselect if clicked again
+                else:
+                    selected_styles.add(style)  # Add selection
+
+# Update session state with selections
+st.session_state["selected_styles"] = selected_styles
+
+# Show selected styles
 if selected_styles:
-    most_preferred_style = max(set(selected_styles), key=selected_styles.count)
-    st.write(f"🎨 Based on your selections, your preferred style is: **{most_preferred_style}**")
+    st.write(f"🎨 Your selected styles: {', '.join(selected_styles)}")
+
 
 
 # **Step 4: Upload or Capture a Room Image**
