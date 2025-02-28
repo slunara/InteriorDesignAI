@@ -19,7 +19,7 @@ logo_url = f"{GITHUB_REPO_URL}logo.jpeg"  # Ensure filename matches the GitHub f
 # Display the logo in the top right corner
 col1, col2 = st.columns([3, 1])  # Create two columns (logo on the right)
 with col2:
-    st.image(logo_url, width=150)  # Adjust width as needed
+    st.image(logo_url, width=350)  # Adjust width as needed
 
 # App Title
 st.title("🏠 AI Interior Design Assistant")
@@ -47,14 +47,17 @@ for idx, (label, img_url) in enumerate(image_paths.items()):
 # **Step 2: Collect User Preferences (Compact Layout)**
 st.subheader("📋 Tell us about your preferences")
 
-col1, col2 = st.columns(2)
+col1, col2, col3 = st.columns(3)
 with col1:
     age = st.slider("📅 Your Age", 18, 80, 30)
+
+with col2:
     gender = st.selectbox("👤 Your Gender", ["Male", "Female", "Other"])
     
-with col2:
+with col3:
     space_type = st.selectbox("🏡 What space do you want to design?", ["Living Room", "Bedroom"])
-    special_request = st.text_area("✍️ Any special requests?")
+    
+special_request = st.text_area("✍️ Any special requests?")
 
 # **Step 3: Determine Your Style Based on Images**
 st.subheader("🎨 Which styles do you like?")
