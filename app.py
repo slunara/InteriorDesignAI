@@ -50,7 +50,7 @@ for idx, (label, img_url) in enumerate(image_paths.items()):
 st.markdown("<hr style='border: 2px solid #bbb;'>", unsafe_allow_html=True)
 
 # **Step 2: Collect User Preferences (Compact Layout)**
-st.subheader("📋 Tell us about your preferences")
+st.subheader("📋 Tell us about you and your preferences")
 
 col1, col2, col3 = st.columns(3)
 with col1:
