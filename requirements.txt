@@ -1,7 +1,7 @@
-ultralytics
-transformers
-torch
-open3d
-opencv-python
-fastai
 streamlit
+opencv-python-headless
+ultralytics
+torch
+transformers
+open3d
+fastai
