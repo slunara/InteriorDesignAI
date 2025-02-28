@@ -2,7 +2,6 @@ import streamlit as st
 import cv2
 import numpy as np
 import torch
-import open3d as o3d
 from ultralytics import YOLO
 from transformers import DPTFeatureExtractor, DPTForDepthEstimation
 from fastai.vision.all import load_learner, PILImage
