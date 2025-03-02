@@ -20,6 +20,7 @@ logo_url = f"{GITHUB_REPO_URL}logo.jpeg"  # Ensure filename matches the GitHub f
 col1, col2 = st.columns([3, 1])  # Create two columns (logo on the right)
 with col2:
     st.image(logo_url, width=350)  # Adjust width as needed
+    
 
 # App Title
 st.title("DecorAIte - Your AI Interior Design Assistant")
