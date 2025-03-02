@@ -3,12 +3,12 @@ import cv2
 import numpy as np
 import torch
 from ultralytics import YOLO
-from transformers import DPTFeatureExtractor, DPTForDepthEstimation
-from fastai.vision.core import PILImage
+#from transformers import DPTFeatureExtractor, DPTForDepthEstimation
+#from fastai.vision.core import PILImage
 
 # Load AI Models
 yolo_model = YOLO("yolov8n.pt")  # Object Detection
-depth_model = DPTForDepthEstimation.from_pretrained("Intel/dpt-large")  # Depth Estimation
+#depth_model = DPTForDepthEstimation.from_pretrained("Intel/dpt-large")  # Depth Estimation
 
 # GitHub repository URL for images
 GITHUB_REPO_URL = "https://raw.githubusercontent.com/slunara/InteriorDesignAI/main/images/"
