@@ -1,117 +1,23 @@
 import streamlit as st
 import cv2
 import numpy as np
-import torch
-from ultralytics import YOLO
-#from transformers import DPTFeatureExtractor, DPTForDepthEstimation
-#from fastai.vision.core import PILImage
-
-# Load AI Models
-yolo_model = YOLO("yolov8n.pt")  # Object Detection
-#depth_model = DPTForDepthEstimation.from_pretrained("Intel/dpt-large")  # Depth Estimation
+import os
+from PIL import Image
 
 # GitHub repository URL for images
 GITHUB_REPO_URL = "https://raw.githubusercontent.com/slunara/InteriorDesignAI/main/images/"
 
 # Define the logo image URL
-logo_url = f"{GITHUB_REPO_URL}logo.jpeg"  # Ensure filename matches the GitHub file
+logo_url = f"{GITHUB_REPO_URL}logo.jpeg"
 
 # Display the logo in the top right corner
-col1, col2 = st.columns([3, 1])  # Create two columns (logo on the right)
+col1, col2 = st.columns([3, 1])
 with col2:
-    st.image(logo_url, width=350)  # Adjust width as needed
-    
+    st.image(logo_url, width=350)
 
-# App Title
-st.title("DecorAIte - Your AI Interior Design Assistant")
-
-st.write("Answer a few questions to receive a personalized interior design render!")
-
-st.markdown("<hr style='border: 2px solid #bbb;'>", unsafe_allow_html=True)
-
-# **Step 1: Define the Current Stage of Your Space**
-st.subheader("🔎 What is the current state of your space?")
-st.write("We need to know the condition of your space to tailor your design experience.")
-
-# Image Paths (Stored in GitHub)
-image_paths = {
-    "Empty Space": f"{GITHUB_REPO_URL}empty.png",
-    "Intermediate": f"{GITHUB_REPO_URL}intermediate.png",
-    "Furnished": f"{GITHUB_REPO_URL}furnished.png",
-}
-
-col1, col2, col3 = st.columns(3)
-for idx, (label, img_url) in enumerate(image_paths.items()):
-    with [col1, col2, col3][idx]:
-        st.image(img_url, use_container_width=True)  # Fix deprecated parameter
-        if st.button(label, key=f"stage_{idx}"):  # Fix duplicate button issue
-            space_stage = label
-            st.write(f"You selected: **{label}**")
-            
-st.markdown("<hr style='border: 2px solid #bbb;'>", unsafe_allow_html=True)
-
-# **Step 2: Collect User Preferences (Compact Layout)**
-st.subheader("📋 Tell us about you and your preferences")
-
-col1, col2, col3 = st.columns(3)
-with col1:
-    age = st.slider("📅 Your Age", 18, 80, 30)
-
-with col2:
-    gender = st.selectbox("👤 Your Gender", ["Male", "Female", "Other"])
-    
-with col3:
-    space_type = st.selectbox("🏡 What space do you want to design?", ["Living Room", "Bedroom"])
-    
-special_request = st.text_area("✍️ Any special requests?")
-
-# **Step 3: Determine Your Style Based on Images**
-st.markdown("<hr style='border: 2px solid #bbb;'>", unsafe_allow_html=True)
-
-
-# Style image links stored in GitHub (Ensure correct `.jpeg` filenames)
-style_images = {
-    "Modern": [f"{GITHUB_REPO_URL}image1.jpeg", f"{GITHUB_REPO_URL}image2.jpeg"],
-    "Minimalist": [f"{GITHUB_REPO_URL}image3.jpeg", f"{GITHUB_REPO_URL}image4.jpeg"],
-    "Classic": [f"{GITHUB_REPO_URL}image5.jpeg", f"{GITHUB_REPO_URL}image6.jpeg"],
-    "Industrial": [f"{GITHUB_REPO_URL}image7.jpeg", f"{GITHUB_REPO_URL}image8.jpeg"],
-    "Bohemian": [f"{GITHUB_REPO_URL}image9.jpeg", f"{GITHUB_REPO_URL}image10.jpeg"],
-    "Scandinavian": [f"{GITHUB_REPO_URL}image11.jpeg", f"{GITHUB_REPO_URL}image12.jpeg"],
-}
-
-
-selected_styles = []
-cols = st.columns(3)  # Create 3 evenly spaced columns
-
-# Display style images for selection (Fixed Layout)
-st.subheader("🎨 Select the styles you like most")
-
-selected_styles = st.session_state.get("selected_styles", set())  # Store selections across reruns
-
-cols = st.columns(3)  # Create 3 evenly spaced columns
-
-for idx, (style, images) in enumerate(style_images.items()):
-    with cols[idx % 3]:  # Arrange images into 3 equal columns
-        for img in images:
-            # Display image
-            st.image(img, use_container_width=True)
-
-            # Unique key based on image filename
-            btn_key = f"style_{img.split('/')[-1]}"
-
-            # Use a toggle button effect
-            if st.button("✓", key=btn_key):
-                if style in selected_styles:
-                    selected_styles.remove(style)  # Unselect if clicked again
-                else:
-                    selected_styles.add(style)  # Add selection
-
-# Update session state with selections
-#st.session_state["selected_styles"] = selected_styles
-
-# Show selected styles
-#if selected_styles:
-#    st.write(f"🎨 Your selected styles: {', '.join(selected_styles)}")
+# **Updated Title and Description**
+st.title("DecorAIte")
+st.write("Answer a few questions to receive a personalized furniture recommendation!")
 
 st.markdown("<hr style='border: 2px solid #bbb;'>", unsafe_allow_html=True)
 
@@ -120,6 +26,7 @@ st.subheader("📸 Upload or Take a Picture of Your Space")
 
 option = st.radio("How would you like to provide the image?", ["Upload a Photo", "Take a Picture"])
 image_rgb = None
+show_furniture = False  # Flag to control when to show furniture images
 
 if option == "Upload a Photo":
     uploaded_file = st.file_uploader("📤 Upload a well-lit photo of your space", type=["jpg", "png", "jpeg"])
@@ -127,7 +34,13 @@ if option == "Upload a Photo":
         file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
         image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
         image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        
+        # Display uploaded image
         st.image(image_rgb, caption="Uploaded Room Image", use_container_width=True)
+        
+        # **"Find My Dream Furniture" Button**
+        if st.button("🔍 Find My Dream Furniture"):
+            show_furniture = True
 
 elif option == "Take a Picture":
     picture = st.camera_input("📸 Capture a photo using your webcam")
@@ -135,7 +48,33 @@ elif option == "Take a Picture":
         file_bytes = np.asarray(bytearray(picture.read()), dtype=np.uint8)
         image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
         image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        
+        # Display captured image
         st.image(image_rgb, caption="Captured Room Image", use_container_width=True)
+
+        # **"Find My Dream Furniture" Button**
+        if st.button("🔍 Find My Dream Furniture"):
+            show_furniture = True
+
+# **Show Furniture Images Only After Clicking "Find My Dream Furniture"**
+if show_furniture:
+    st.subheader("🛋️ Recommended Furniture for Your Space")
+
+    furniture_images = {
+        "Chair": f"{GITHUB_REPO_URL}chair.jpeg",
+        "Sofa": f"{GITHUB_REPO_URL}sofa.jpeg",
+        "Coffee Table": f"{GITHUB_REPO_URL}coffee_table.jpeg",
+        "Painting": f"{GITHUB_REPO_URL}painting.jpeg",
+    }
+
+    col1, col2, col3, col4 = st.columns(4)  # 4 columns for 4 furniture items
+
+    for idx, (label, img_url) in enumerate(furniture_images.items()):
+        with [col1, col2, col3, col4][idx]:  # Arrange in 4 columns
+            st.image(img_url, caption=label, use_container_width=True)
+            if st.button(f"Replace {label}", key=f"replace_{idx}"):
+                st.write(f"🔄 You selected to replace **{label}**.")
+
 st.markdown("<hr style='border: 2px solid #bbb;'>", unsafe_allow_html=True)
 
 # **Generate the Dream Space**
