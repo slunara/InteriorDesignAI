@@ -170,15 +170,14 @@ st.markdown("<hr style='border: 2px solid #bbb;'>", unsafe_allow_html=True)
 
 # **Show Furniture Images Only After Clicking "Find My Dream Furniture"**
 
-if show_furniture:
-    
+    # **Show "Generate Your Dream Space" Button After Clicking "Find My Dream Furniture"**
     if st.button("✨ Generate Your Dream Space"):
         st.subheader("🏡 Your Dream Space Design")
         
         # Display output image from GitHub
         output_image_url = f"{GITHUB_REPO_URL}output.png"
         st.image(output_image_url, caption="Your AI-Generated Design", use_container_width=True)
-    
+
         # Display 3 options in columns
         col1, col2, col3 = st.columns(3)
         
