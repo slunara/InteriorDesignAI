@@ -21,15 +21,15 @@ st.write("Answer a few questions to receive a personalized furniture recommendat
 
 st.markdown("<hr style='border: 2px solid #bbb;'>", unsafe_allow_html=True)
 
-# **Step 1: Define the Current Stage of Your Space**
-st.subheader("🔎 What is the current state of your space?")
-st.write("We need to know the condition of your space to tailor your design experience.")
+# **Step 1: Define the Scope of Your Renovation**
+st.subheader("🔎 What level of change do you want for your space?")
+st.write("Select whether you want a full renovation, some changes, or minor adjustments.")
 
-# Image Paths (Stored in GitHub)
+# Image Paths (Stored in GitHub) - Images remain the same
 image_paths = {
-    "Empty Space": f"{GITHUB_REPO_URL}empty.png",
-    "Intermediate": f"{GITHUB_REPO_URL}intermediate.png",
-    "Furnished": f"{GITHUB_REPO_URL}furnished.png",
+    "Full Renovation": f"{GITHUB_REPO_URL}empty.png",
+    "Some Changes": f"{GITHUB_REPO_URL}intermediate.png",
+    "Minor Changes": f"{GITHUB_REPO_URL}furnished.png",
 }
 
 col1, col2, col3 = st.columns(3)
@@ -38,7 +38,7 @@ for idx, (label, img_url) in enumerate(image_paths.items()):
         st.image(img_url, use_container_width=True)
         if st.button(label, key=f"stage_{idx}"):
             space_stage = label
-            st.write(f"You selected: **{label}**")
+            st.write(f"You selected: **{label}**"
 
 st.markdown("<hr style='border: 2px solid #bbb;'>", unsafe_allow_html=True)
 
