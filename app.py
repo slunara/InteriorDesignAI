@@ -20,6 +20,7 @@ logo_url = f"{GITHUB_REPO_URL}logo.jpeg"  # Ensure filename matches the GitHub f
 col1, col2 = st.columns([3, 1])  # Create two columns (logo on the right)
 with col2:
     st.image(logo_url, width=350)  # Adjust width as needed
+    
 
 # App Title
 st.title("DecorAIte - Your AI Interior Design Assistant")
@@ -67,7 +68,6 @@ special_request = st.text_area("✍️ Any special requests?")
 # **Step 3: Determine Your Style Based on Images**
 st.markdown("<hr style='border: 2px solid #bbb;'>", unsafe_allow_html=True)
 
-st.write("Select the images that best match your design taste.")
 
 # Style image links stored in GitHub (Ensure correct `.jpeg` filenames)
 style_images = {
@@ -107,11 +107,11 @@ for idx, (style, images) in enumerate(style_images.items()):
                     selected_styles.add(style)  # Add selection
 
 # Update session state with selections
-st.session_state["selected_styles"] = selected_styles
+#st.session_state["selected_styles"] = selected_styles
 
 # Show selected styles
-if selected_styles:
-    st.write(f"🎨 Your selected styles: {', '.join(selected_styles)}")
+#if selected_styles:
+#    st.write(f"🎨 Your selected styles: {', '.join(selected_styles)}")
 
 st.markdown("<hr style='border: 2px solid #bbb;'>", unsafe_allow_html=True)
 
