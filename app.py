@@ -57,9 +57,11 @@ with col3:
 
 special_request = st.text_area("✍️ Any special requests?")
 
+# **New Budget Input**
+budget = st.number_input("💰 What is your budget?", min_value=100, max_value=100000, value=5000, step=100)
+
 st.markdown("<hr style='border: 2px solid #bbb;'>", unsafe_allow_html=True)
 # **Step 3: Determine Your Style Based on Images**
-st.markdown("<hr style='border: 2px solid #bbb;'>", unsafe_allow_html=True)
 
 st.write("Select the images that best match your design taste.")
 
