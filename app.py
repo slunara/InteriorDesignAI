@@ -58,6 +58,56 @@ with col3:
 special_request = st.text_area("✍️ Any special requests?")
 
 st.markdown("<hr style='border: 2px solid #bbb;'>", unsafe_allow_html=True)
+# **Step 3: Determine Your Style Based on Images**
+st.markdown("<hr style='border: 2px solid #bbb;'>", unsafe_allow_html=True)
+
+st.write("Select the images that best match your design taste.")
+
+# Style image links stored in GitHub (Ensure correct .jpeg filenames)
+style_images = {
+    "Modern": [f"{GITHUB_REPO_URL}image1.jpeg", f"{GITHUB_REPO_URL}image2.jpeg"],
+    "Minimalist": [f"{GITHUB_REPO_URL}image3.jpeg", f"{GITHUB_REPO_URL}image4.jpeg"],
+    "Classic": [f"{GITHUB_REPO_URL}image5.jpeg", f"{GITHUB_REPO_URL}image6.jpeg"],
+    "Industrial": [f"{GITHUB_REPO_URL}image7.jpeg", f"{GITHUB_REPO_URL}image8.jpeg"],
+    "Bohemian": [f"{GITHUB_REPO_URL}image9.jpeg", f"{GITHUB_REPO_URL}image10.jpeg"],
+    "Scandinavian": [f"{GITHUB_REPO_URL}image11.jpeg", f"{GITHUB_REPO_URL}image12.jpeg"],
+}
+
+
+selected_styles = []
+cols = st.columns(3)  # Create 3 evenly spaced columns
+
+# Display style images for selection (Fixed Layout)
+st.subheader("🎨 Select the styles you like most")
+
+selected_styles = st.session_state.get("selected_styles", set())  # Store selections across reruns
+
+cols = st.columns(3)  # Create 3 evenly spaced columns
+
+for idx, (style, images) in enumerate(style_images.items()):
+    with cols[idx % 3]:  # Arrange images into 3 equal columns
+        for img in images:
+            # Display image
+            st.image(img, use_container_width=True)
+
+            # Unique key based on image filename
+            btn_key = f"style_{img.split('/')[-1]}"
+
+            # Use a toggle button effect
+            if st.button("✓", key=btn_key):
+                if style in selected_styles:
+                    selected_styles.remove(style)  # Unselect if clicked again
+                else:
+                    selected_styles.add(style)  # Add selection
+
+# Update session state with selections
+st.session_state["selected_styles"] = selected_styles
+
+# Show selected styles
+if selected_styles:
+    st.write(f"🎨 Your selected styles: {', '.join(selected_styles)}")
+
+st.markdown("<hr style='border: 2px solid #bbb;'>", unsafe_allow_html=True)
 
 # **Step 4: Upload or Capture a Room Image**
 st.subheader("📸 Upload or Take a Picture of Your Space")
