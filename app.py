@@ -38,7 +38,7 @@ for idx, (label, img_url) in enumerate(image_paths.items()):
         st.image(img_url, use_container_width=True)
         if st.button(label, key=f"stage_{idx}"):
             space_stage = label
-            st.write(f"You selected: **{label}**"
+            st.write(f"You selected: **{label}**")
 
 st.markdown("<hr style='border: 2px solid #bbb;'>", unsafe_allow_html=True)
 
