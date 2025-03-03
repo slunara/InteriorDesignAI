@@ -163,7 +163,6 @@ if show_furniture:
             if st.button(f"Replace {label}", key=f"replace_{idx}"):
                 st.write(f"🔄 You selected to replace **{label}**.")
 
-st.markdown("<hr style='border: 2px solid #bbb;'>", unsafe_allow_html=True)
 
 # **Generate the Dream Space**
 
